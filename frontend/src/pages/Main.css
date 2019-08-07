@@ -67,3 +67,10 @@
   transform: translateY(-4px);
   transition: all 0.2s;
 }
+
+.main-container .empty-list {
+  font-size: 32px;
+  color: #999;
+  font-weight: bold;
+  margin-top: 300px;
+}

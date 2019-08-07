@@ -23,11 +23,30 @@ export default function Main({ match }){
     loadUsers();
   }, [match.params.id]);
 
+  async function handleLike(id){
+
+    await api.post(`/devs/${id}/likes`, null, {
+      headers: { user: match.params.id }
+    });
+
+    setUsers(users.filter(user => user._id !== id));
+  }
+
+  async function handleDislike(id){
+
+    await api.post(`/devs/${id}/dislikes`, null, {
+      headers: { user: match.params.id }
+    });
+
+    setUsers(users.filter(user => user._id !== id));
+  }
+
   return(
 
     <div className="main-container">
       <img src={logo} alt="Tindev-logo" />
-      <ul>
+      {users.length > 0 ? (
+        <ul>
         {users.map(user => (
 
         <li key={user._id}>
@@ -38,16 +57,23 @@ export default function Main({ match }){
           </footer>
 
           <div className="buttons">
-            <button type="button">
+            <button type="button" onClick={() => handleDislike(user._id)}>
               <img src={dislike} alt="dislike-button" />
             </button>
-            <button type="button">
+            <button type="button" onClick={() => handleLike(user._id)}>
               <img src={like} alt="like-button" />
             </button>
           </div>
         </li>
         ))}
       </ul>
+      ) : (
+        <div className="empty-list">
+          <p>
+            Não existem devs compatíveis no momento :(
+          </p>
+        </div>
+      ) }
     </div>
   );
 }
