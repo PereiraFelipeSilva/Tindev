@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, Image, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import api from '../services/api';
+import AsyncStorage from '@react-native-community/async-storage';
 import logo from '../assets/logo.png';
 import dislike from '../assets/dislike.png';
 import like from '../assets/like.png';
@@ -24,28 +25,40 @@ export default function Main({ navigation }){
     loadUsers();
   }, [id]);
 
-  async function handleLike(id){
+  async function handleLike(){
 
-    await api.post(`/devs/${id}/likes`, null, {
+    const [user, ...rest] = users;
+
+    await api.post(`/devs/${user._id}/likes`, null, {
       headers: { user: id }
     });
 
-    setUsers(users.filter(user => user._id !== id));
+    setUsers(rest);
   }
 
-  async function handleDislike(id){
+  async function handleDislike(){
 
-    await api.post(`/devs/${id}/dislikes`, null, {
+    const [user, ...rest] = users;
+
+    await api.post(`/devs/${user._id}/dislikes`, null, {
       headers: { user: id }
     });
 
-    setUsers(users.filter(user => user._id !== id));
+    setUsers(rest);
+  }
+
+  async function handleLogout(){
+
+    await AsyncStorage.clear();
+    navigation.navigate('Login');
   }
 
   return (
 
     <SafeAreaView style={styles.container}>
-      <Image style={styles.logo} source={logo}/>
+      <TouchableOpacity onPress={handleLogout}>
+        <Image style={styles.logo} source={logo}/>
+      </TouchableOpacity>
 
       <View style={styles.cardsContainer}>
         { users.length === 0 
@@ -65,14 +78,16 @@ export default function Main({ navigation }){
         )}
       </View>
 
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button}>
+      {users.length > 0 && (
+        <View style={styles.buttonsContainer}>
+        <TouchableOpacity style={styles.button} onPress={handleDislike}>
           <Image source={dislike}/>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleLike}>
           <Image source={like}/>
         </TouchableOpacity>
       </View>
+      )}
     </SafeAreaView>
   );
 }
