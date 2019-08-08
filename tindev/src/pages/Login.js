@@ -1,8 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, Image, TextInput, Text, TouchableOpacity } from 'react-native';
 import logo from '../assets/logo.png';
 
-export default function Login(){
+export default function Login({ navigation }){
+
+  const [user, setUser] = useState('');
+
+  function handleLogin(){
+
+    console.log(user);
+    navigation.navigate('Main');
+  }
 
   return (
     <KeyboardAvoidingView
@@ -17,8 +25,10 @@ export default function Login(){
         placeholder="Digite seu usuário do Github"
         placeholderTextColor="#999"
         style={styles.input}
+        value={user}
+        onChangeText={setUser}
       />
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
