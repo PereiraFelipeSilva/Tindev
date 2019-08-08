@@ -1,15 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
 import { KeyboardAvoidingView, Platform, StyleSheet, Image, TextInput, Text, TouchableOpacity } from 'react-native';
 import logo from '../assets/logo.png';
+import api from '../services/api';
 
 export default function Login({ navigation }){
 
   const [user, setUser] = useState('');
 
-  function handleLogin(){
+  useEffect(()=> {
+    AsyncStorage.getItem('user').then(user => {
+      if(user){
+        navigation.navigate('Main', { user })
+      }
+    })
+  }, []);
 
-    console.log(user);
-    navigation.navigate('Main');
+  async function handleLogin(){
+
+    const response = await api.post('/devs', { username: user });
+    const {_id} = response.data;
+    
+    await AsyncStorage.setItem('user', _id);
+    navigation.navigate('Main', { _id });
   }
 
   return (
